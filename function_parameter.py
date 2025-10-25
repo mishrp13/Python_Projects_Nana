@@ -18,4 +18,3 @@ def scope_check(number_of_days):
 
 scope_check(30)
 
-#start from 1 hour
