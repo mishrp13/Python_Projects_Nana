@@ -35,6 +35,8 @@ while user_input!="exit":
     print(type(days_and_unit_dictionary))
     validate_and_execute()
 
+   
+
 
 
 
