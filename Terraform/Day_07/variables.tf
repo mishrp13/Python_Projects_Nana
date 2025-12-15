@@ -86,5 +86,11 @@ variable "config" {
       monitoring = bool,
       instance_count=number
     })
+
+    default = {
+      region = "us-east-1",
+      monitoring = true
+      instance_count = 1
+    }
   
 }
