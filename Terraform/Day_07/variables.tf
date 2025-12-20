@@ -44,6 +44,8 @@ variable "cidr_block" {
   
 }
 
+
+## Example of list
 variable "allowed_vm_types" {
 
     description = "List of allowed vm types"
@@ -52,6 +54,8 @@ variable "allowed_vm_types" {
   
 }
 
+
+## Example of set
 variable "allowed_region" {
 
     description = "List of allowed aws regions"
@@ -60,6 +64,8 @@ variable "allowed_region" {
   
 }
 
+
+## Example of map
 variable "tags" {
 
     type = map(string)
@@ -72,12 +78,18 @@ variable "tags" {
   
 }
 
+
+## Example of tuple
 variable "ingress_value" {
 
     type= tuple([ number, string, number ])
     default = [ 443, "tcp", 443 ]
   
 }
+
+
+## Dictionary...object
+## Collection of different element in Map
 
 variable "config" {
 
