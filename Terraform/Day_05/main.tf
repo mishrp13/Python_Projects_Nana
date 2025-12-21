@@ -99,7 +99,7 @@ output "ec2_id" {
 #export TF_VAR_environment=stage
 
 # precedence
-# -var=environment=prod > terraform.tfvars > Export (Env Variable) > default
+# terraform plan -var=environment=prod > terraform.tfvars > Export (Env Variable) > default
 
 
 
