@@ -1,0 +1,58 @@
+locals {
+  formatted_project_name = lower(replace(var.project_name," ","-"))
+  new_tag=merge(var.default_tags,var.environment_tags)
+  formatted_bucket_name= replace(replace(substr(lower(var.bucket_name),0,64)," ",""), "!", "")
+  port_list= split(",", var.allowed_ports)
+
+
+  sg_rules= [
+
+    for port in local.port_list :
+
+    {
+        name= "port-${port}"
+        port=port
+        description= "Allowed traffic on port ${port}"
+    }
+
+  ]
+
+  instance_size = lookup(var.instance_sizes, var.environment, "t2.micro")
+  
+  # Merge is for map and concat is for string
+  all_locations = concat(var.user_location , var.default_locations)
+
+  unique_locations= toset(local.all_locations)
+
+  # Math function , we are using for loop here because monthly cost is tuple 
+  positive_cost= [for cost in var.monthly_costs : abs(cost)]
+  
+  
+
+  max_cost= max(local.positive_cost...)
+
+  min_cost= min(local.positive_cost...)
+
+  total_cost=sum(local.positive_cost)
+
+  average_cost=local.total_cost/length(local.positive_cost)
+
+  current_timestamp = timestamp()
+  format1= formatdate("yyyyMMdd", local.current_timestamp)
+  format2= formatdate("YYYY-MM-DD", local.current_timestamp)
+  timestamp= "backup-${local.format1}"
+
+
+  config_file_exist= fileexists("./config.json")
+  config_data = local.config_file_exist ? jsondecode (file("./config.json")) : {}
+
+}
+
+resource "aws_s3_bucket" "firsts3" {
+
+   bucket= local.formatted_bucket_name
+
+   tags= local.new_tag
+  
+}
+
