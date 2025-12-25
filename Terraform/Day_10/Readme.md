@@ -1,4 +1,4 @@
-Conditional Expression in Terraform
+1. Conditional Expression in Terraform
 What it is
 
 A conditional expression lets you choose a value based on a condition (similar to if-else).
