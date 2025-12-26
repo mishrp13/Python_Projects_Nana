@@ -1,165 +1,188 @@
-1. Conditional Expression in Terraform
-What it is
+Terraform data source (aws) — clear explanation
 
-A conditional expression lets you choose a value based on a condition (similar to if-else).
-It is often used in AWS to control resource configuration, enable/disable features, or switch between environments.
-
-Syntax
-condition ? true_value : false_value
-
-AWS Example 1: Enable public IP only in dev
-variable "environment" {
-  default = "dev"
-}
-
-resource "aws_instance" "example" {
-  ami           = "ami-0abcdef123"
-  instance_type = "t2.micro"
-
-  associate_public_ip_address = var.environment == "dev" ? true : false
-}
-
-
-🔹 Explanation
-
-In dev, EC2 gets a public IP
-
-In prod, it does not
-
-AWS Example 2: Choose instance type by environment
-instance_type = var.environment == "prod" ? "t3.large" : "t3.micro"
-
-Common AWS Use Cases
-
-✔ Environment-based configuration
-✔ Optional features (monitoring, encryption, public access)
-✔ Cost optimization
-
-2. Splat Expression in Terraform
-What it is
-
-A splat expression is used to extract attributes from multiple resources or lists.
+In Terraform, a data source is used to READ existing infrastructure — not create it.
 
 Think of it as:
-👉 “Give me this attribute from all resources”
 
-Syntax
-resource_type.resource_name[*].attribute
+🔎 “Look up something that already exists in AWS so I can use it.”
 
-AWS Example 1: Multiple EC2 instances → get all IDs
-resource "aws_instance" "web" {
-  count         = 3
-  ami           = "ami-0abcdef123"
-  instance_type = "t2.micro"
-}
-
-output "instance_ids" {
-  value = aws_instance.web[*].id
+🔹 What is a Terraform data source?
+data "<PROVIDER>_<TYPE>" "<NAME>" {
+  # filters / arguments
 }
 
 
-🔹 Output:
+data → keyword meaning read-only
 
-["i-123", "i-456", "i-789"]
+aws → provider
 
-AWS Example 2: Get private IPs for an ALB target group
-output "private_ips" {
-  value = aws_instance.web[*].private_ip
-}
+vpc / ami / subnet → resource type
 
-AWS Example 3: Splat with modules
-module "vpc" {
-  source = "./vpc"
-  count  = 2
-}
+<NAME> → local reference name
 
-output "vpc_ids" {
-  value = module.vpc[*].vpc_id
-}
+⚠️ Data sources do not create or modify anything.
 
-When to use splat expressions
+🔹 Why data sources are needed
 
-✔ count or for_each resources
-✔ Outputs
-✔ Passing lists to AWS resources (ALB, ASG, Security Groups)
+Terraform resources often need IDs of existing AWS objects:
 
-3. Dynamic Block in Terraform
-What it is
+Needed for	Example
+EC2	AMI ID
+Subnet	VPC ID
+Security Group	VPC ID
+Load Balancer	Subnet IDs
 
-A dynamic block allows you to generate repeated nested blocks dynamically.
+Instead of hardcoding IDs, data sources discover them dynamically.
 
-In AWS, many resources have repeatable nested blocks, such as:
+🔹 Example 1: aws_ami (find latest Amazon Linux 2)
+data "aws_ami" "linux2" {
+  owners      = ["amazon"]
+  most_recent = true
 
-ingress / egress in security groups
-
-listener rules
-
-tags
-
-ebs_block_device
-
-Syntax
-dynamic "block_name" {
-  for_each = collection
-  content {
-    # block content
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
   }
 }
 
-AWS Example 1: Dynamic security group rules
-variable "ingress_rules" {
-  default = [
-    { port = 80, cidr = "0.0.0.0/0" },
-    { port = 443, cidr = "0.0.0.0/0" }
-  ]
+What Terraform does:
+
+Calls AWS API
+
+Finds matching AMIs
+
+Picks the latest
+
+Stores the AMI ID
+
+How you use it:
+ami = data.aws_ami.linux2.id
+
+🔹 Example 2: aws_vpc (read existing VPC)
+data "aws_vpc" "main" {
+  default = true
 }
 
-resource "aws_security_group" "web_sg" {
-  name = "web-sg"
 
-  dynamic "ingress" {
-    for_each = var.ingress_rules
-    content {
-      from_port   = ingress.value.port
-      to_port     = ingress.value.port
-      protocol    = "tcp"
-      cidr_blocks = [ingress.value.cidr]
-    }
+Terraform:
+
+Searches AWS
+
+Returns the default VPC
+
+Makes its attributes available
+
+Usage:
+
+vpc_id = data.aws_vpc.main.id
+
+🔹 Example 3: aws_subnet (find subnet in VPC)
+data "aws_subnet" "one" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.main.id]
   }
 }
 
 
-🔹 Terraform creates two ingress rules automatically.
+Usage:
 
-AWS Example 2: Dynamic EBS volumes for EC2
-variable "volumes" {
-  default = [
-    { device = "/dev/sdb", size = 50 },
-    { device = "/dev/sdc", size = 100 }
-  ]
-}
+subnet_id = data.aws_subnet.one.id
 
-resource "aws_instance" "example" {
-  ami           = "ami-0abcdef123"
-  instance_type = "t2.micro"
+🔹 Data source vs Resource (IMPORTANT)
+Feature	data	resource
+Creates infrastructure	❌	✅
+Reads existing infra	✅	❌
+Changes infra	❌	✅
+Stored in state	✅ (read-only)	✅ (managed)
+🔹 When to use data sources
 
-  dynamic "ebs_block_device" {
-    for_each = var.volumes
-    content {
-      device_name = ebs_block_device.value.device
-      volume_size = ebs_block_device.value.size
-    }
-  }
-}
+✅ Use data sources when:
 
-When to use dynamic blocks
+Infra already exists
 
-✔ When AWS resource has repeated nested blocks
-✔ When rules/blocks depend on variables
-✔ To avoid copy-paste code
+Using default VPC/subnets
 
-| Feature                | Purpose                                | Common AWS Usage                   |
-| ---------------------- | -------------------------------------- | ---------------------------------- |
-| Conditional Expression | Choose values dynamically              | Env-based instance type, public IP |
-| Splat Expression       | Extract attributes from many resources | EC2 IDs, IPs, subnet IDs           |
-| Dynamic Block          | Generate nested blocks dynamically     | SG rules, EBS volumes, listeners   |
+Sharing infra across teams
+
+Reading AMIs, AZs, IAM roles
+
+❌ Don’t use data sources when:
+
+You want Terraform to manage lifecycle
+
+You plan to create & destroy resources
+
+🔹 Common AWS data sources
+Data source	Purpose
+aws_ami	Find AMI
+aws_vpc	Get VPC
+aws_subnet	Get subnet
+aws_security_group	Get SG
+aws_availability_zones	List AZs
+aws_iam_role	Read IAM role
+🔹 Common mistakes (you just hit these)
+
+❌ Wrong tag key:
+
+tag:name   ❌
+tag:Name   ✅
+
+
+❌ Referencing object instead of attribute:
+
+subnet_id = data.aws_subnet.shared      ❌
+subnet_id = data.aws_subnet.shared.id   ✅
+
+
+❌ Over-filtering → “no matching found”
+
+🔹 Mental model (remember this)
+
+Resources build. Data sources look up.
+
+┌──────────────────────┐
+│   terraform plan     │
+└─────────┬────────────┘
+          │
+          ▼
+┌──────────────────────┐
+│  Provider (AWS)      │
+│  Authentication      │
+└─────────┬────────────┘
+          │
+          ▼
+┌────────────────────────────────────────────┐
+│            DATA SOURCES (READ)              │
+│                                            │
+│  data.aws_vpc        ──► get VPC ID         │
+│  data.aws_subnet     ──► get Subnet ID      │
+│  data.aws_ami        ──► get AMI ID         │
+│                                            │
+│  ❌ No creation                              │
+│  ❌ No modification                          │
+│  ✅ Read-only                                │
+└─────────┬──────────────────────────────────┘
+          │
+          ▼
+┌────────────────────────────────────────────┐
+│            TERRAFORM GRAPH                 │
+│  (dependency resolution using references) │
+└─────────┬──────────────────────────────────┘
+          │
+          ▼
+┌────────────────────────────────────────────┐
+│            RESOURCES (CREATE)               │
+│                                            │
+│  aws_instance                               │
+│    ├─ uses AMI ID                           │
+│    ├─ uses Subnet ID                        │
+│    └─ uses VPC ID                           │
+│                                            │
+│  ✅ Create / Update / Delete                │
+└─────────┬──────────────────────────────────┘
+          │
+          ▼
+┌──────────────────────┐
+│   terraform apply    │
+└──────────────────────┘
