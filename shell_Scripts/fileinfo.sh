@@ -10,7 +10,7 @@ fi
 
 file=$1
 
-#check if file exists
+#check if file exists..
 
 if [ ! -f "$file" ]; then
    echo "Error: file '$file' not found "
