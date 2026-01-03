@@ -174,4 +174,10 @@ ALB controls traffic
 
 Terraform switches traffic using variables
 
-Rollbacks are instant and safe
+Rollbacks are instant and 
+
+
+
+
+Main.tf:
+
