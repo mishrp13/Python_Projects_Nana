@@ -1,0 +1,138 @@
+pipeline {
+    agent any
+    tools {
+        maven "MAVEN3.9"
+        jdk "JDK17"
+    }
+
+
+    environment {
+        registryCredential = 'ecr:us-east-2:awscreds'
+        appRegistry = "322703425874.dkr.ecr.us-east-1.amazonaws.com/vprofileappimg"
+        vprofileRegistry = "https://322703425874.dkr.ecr.us-east-1.amazonaws.com"
+        cluster = "vprofiles"
+        service = "vprofileappsvc"
+    }
+  stages {
+   
+        stage('Fetch code') {
+            steps {
+               git branch: 'docker', url: 'https://github.com/hkhcoder/vprofile-project.git'
+            }
+
+        }
+
+//    Archives the built .war artifact for later stages or audit purposes.
+
+        stage('Build'){
+            steps{
+               sh 'mvn install -DskipTests'
+            }
+
+            post {
+               success {
+                  echo 'Now Archiving it...'
+                  archiveArtifacts artifacts: '**/target/*.war'
+               }
+            }
+        }
+
+        // Runs unit tests using Maven.
+
+        // Useful for validating core logic before further analysis.
+
+        stage('UNIT TEST') {
+            steps{
+                sh 'mvn test'
+            }
+        }
+
+        // Runs Checkstyle to analyze Java code formatting, naming, and style violations.
+
+        // Generates a report (checkstyle-result.xml).
+
+        stage('Checkstyle Analysis') {
+            steps{
+                sh 'mvn checkstyle:checkstyle'
+            }
+        }
+
+// Runs sonar-scanner with:
+
+// projectKey, projectName, projectVersion
+
+// Paths for source code, binaries, unit test reports, coverage (jacoco), and Checkstyle results.
+
+// This helps in identifying bugs, vulnerabilities, and code smells.
+
+        stage("Sonar Code Analysis") {
+            environment {
+                scannerHome = tool 'sonar6.2'
+            }
+            steps {
+              withSonarQubeEnv('sonarserver') {
+                sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
+                   -Dsonar.projectName=vprofile \
+                   -Dsonar.projectVersion=1.0 \
+                   -Dsonar.sources=src/ \
+                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
+              }
+            }
+        }
+
+        // Jenkins waits for SonarQube to return a Quality Gate result (pass/fail).
+
+        // If it fails (e.g., too many issues or low coverage), the pipeline stops immediately.
+
+        stage("Quality Gate") {
+            steps {
+              timeout(time: 1, unit: 'HOURS') {
+                waitForQualityGate abortPipeline: true
+              }
+            }
+          }
+
+        stage('Build App Image') {
+          steps {
+       
+            script {
+                dockerImage = docker.build( appRegistry + ":$BUILD_NUMBER", "./Docker-files/app/multistage/")
+                }
+          }
+    
+        }
+
+        stage('Upload App Image') {
+          steps{
+            script {
+              docker.withRegistry( vprofileRegistry, registryCredential ) {
+                dockerImage.push("$BUILD_NUMBER")
+                dockerImage.push('latest')
+              }
+            }
+          }
+        }
+
+        stage('Remove Container Images'){
+            steps{
+                sh 'docker rmi -f $(docker images -a -q)'
+            }
+        }
+
+
+        stage('Deploy to ecs') {
+          steps {
+            withAWS(credentials: 'awscreds', region: 'us-east-2') {
+            sh 'aws ecs update-service --cluster ${cluster} --service ${service} --force-new-deployment'
+               }
+          }
+        }
+
+  }
+}
+
+
+
