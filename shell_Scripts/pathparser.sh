@@ -1,7 +1,8 @@
 #!/bin/bash
 
 
-path= "C:\Users\praba\Downloads\report.txt"
+path="C:/Users/praba/Downloads/report.txt"
+
 
 echo "== original path == "
 
