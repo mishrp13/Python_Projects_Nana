@@ -30,5 +30,11 @@ variable "tags" {
 
     description = "common tags"
     type=map(string)
+
+     default = {
+    Project     = "BlueGreenDeployment"
+    Environment = "Demo"
+    ManagedBy   = "Terraform"
+  }
   
 }
