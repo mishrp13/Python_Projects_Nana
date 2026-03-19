@@ -33,6 +33,7 @@ resource "aws_internet_gateway" "igw" {
   vpc_id=aws_vpc.demo_vpc.id
 }
 
+
 resource "aws_route_table" "public_rtb" {
   vpc_id = aws_vpc.demo_vpc.id
 

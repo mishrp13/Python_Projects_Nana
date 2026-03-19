@@ -13,3 +13,4 @@ if usage_percent >= THRESHOLD:
     print(f"ALERT: Disk usage on {PARTITION} is {usage_percent:.2f}%")
 else:
     print(f"Disk usage on {PARTITION} is normal: {usage_percent:.2f}%")
+
