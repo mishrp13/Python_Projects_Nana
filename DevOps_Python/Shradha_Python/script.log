@@ -1,0 +1,5 @@
+2026-03-25 13:00:33,020 | ERROR | File Error : source file not found: errors.log
+2026-03-25 13:06:09,465 | ERROR | File Error : source file not found: errors.log
+2026-03-25 13:07:08,780 | INFO | Reading  source file: errors.log
+2026-03-25 13:07:08,780 | INFO | Total ERROR lines found: 4
+2026-03-25 13:07:08,782 | INFO | Error appended to: server.log
