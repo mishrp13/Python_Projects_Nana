@@ -1,5 +1,3 @@
-#Write a script to read a file called server.log and count the total number of lines
-
 import argparse
 import logging
 import os
@@ -11,54 +9,65 @@ logging.basicConfig(
     format= "%(asctime)s | %(levelname)s | %(message)s",
     handlers=[
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler("line_counter.log")
+        logging.FileHandler("script.log")
     ]
 )
 
-logger= logging.getLogger(__name__)
 
 
-def count_lines(filepath :str)-> int:
+logger = logging.getLogger(__name__)
 
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"File not found: {filepath}")
+def extract_errors(source_file: str, output_file: str) -> int:
+
+    if not os.path.exists(source_file):
+        print(f"source file not found: {source_file}")
+
+    if not os.access(source_file, os.R_OK):
+        raise PermissionError(f"No read permission: {source_file}")
     
-    if not os.access(filepath, os.R_OK):
-        raise PermissionError(f" No permission for: {filepath}")
+    output_dir= os.path.dirname(output_file)
+    if output_dir and not os.path.exists(output_dir):
+        logger.info(f"creating a directory: {output_dir}")
+        os.makedirs(output_dir)
+
+
+    logger.info(f"Reading  source file: {source_file}")
+
+    err_count =0
+
+    with open(source_file, "r") as infile, open (output_file, "a") as outfile:
+        for line in infile:
+            if "ERROR" in line:
+                outfile.write(line)
+                err_count += 1
+                logger.debug(f"ERROR line found: {line.strip()}")
+
+    logger.info(f"Total ERROR lines found: {err_count}")
+    logger.info(f"Error appended to: {output_file}")
     
-    logger.info(f"Reading file: {filepath}")
-
-    count = 0
-    with open(filepath, "r") as f:
-        for _ in f:
-            count += 1
-
-    logger.info(f"Total lines counted..{count}")
-    return count
+    
+    return err_count 
 
 def parse_args():
-    parser = argparse.ArgumentParser(
-        description= "count total no of files"
+
+    parser= argparse.ArgumentParser(
+        description=" Extract Error lines from log file and append to errors.log "
     )
 
     parser.add_argument(
-        "--file",
-        default="server.log",
-        help="Path to the log file(default: server.log)"
+        
     )
 
-    return parser.parse_args();
+
+    
+     
+
+    
 
 
-def main():
-    args=parse_args()
 
-    try:
-        total = count_lines(args.file)
-        print(f"\n Total lines in '{args.file}': {total}\n")
 
-    except FileNotFoundError as e:
-        logger.error(f"File error: {e}")
-        sys.exit(1)
+
+
 
 

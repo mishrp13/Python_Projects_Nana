@@ -1,3 +1,6 @@
+
+#----------------------
+
 def count_in_lines(file_path):
     try:
         with open(file_path,'r') as file:
@@ -20,6 +23,7 @@ import os
 import sys
 
 # ── Logging Setup
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s",
@@ -29,6 +33,7 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
 
 
 def count_lines(filepath: str) -> int:
