@@ -45,23 +45,22 @@ def safe_str(value: Any, field_name: str) -> str:
     return result
 
 
-def safe_bool(value: Any, field_name: str) -> bool:
+def safe_bool(value: Any, filed_name: str) -> bool:
 
-    if isinstance(value,bool):
+    if isinstance(value, bool):
         return True
     
     if isinstance(value, int):
-        return value != 0
+        return value!=0
     
     if isinstance(value, str):
         normalized= value.strip().lower()
-
-        if normalized in ("true", "1","yes","enabled"):
+        if normalized in ("true", "1", "yes", "enabled"):
             return True
-        if normalized in ("false","0", "no", "disabled"):
+        if normalized in ("false", "0", "no", "disabled"):
             return False
         
     raise ValueError(
-        f"Filed: {field_name} value cannot be parsed as bool: "
-        f"'{value}' (type: {type(value).__name__}) "
+        f"field_value : {filed_name} cannot be parsed to bool"
+        f"{value} is (type : {type(value).__name__})"
     )
