@@ -36,6 +36,8 @@ variable "associate_public_ip" {
   
 }
 
+
+#list 
 variable "cidr_block" {
 
     description = "CIDR block for the vpc"
@@ -79,7 +81,8 @@ variable "tags" {
 }
 
 
-## Example of tuple
+## Example of tuple, we can have multiple types of data in tuple, but we have to maintain the 
+#order of data type as well as the value in tuple
 variable "ingress_value" {
 
     type= tuple([ number, string, number ])

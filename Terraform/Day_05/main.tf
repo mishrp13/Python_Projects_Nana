@@ -9,6 +9,8 @@ terraform {
     
   }
 
+
+
   required_providers {
     aws ={
 
@@ -17,6 +19,8 @@ terraform {
     }
   }
 }
+
+
 
 provider "aws" {
     region = "us-east-1"
@@ -95,6 +99,8 @@ output "ec2_id" {
     value = aws_instance.example.id
   
 }
+
+
 
 #export TF_VAR_environment=stage
 
