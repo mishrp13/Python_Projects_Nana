@@ -115,6 +115,12 @@ logs = ["ERROR", "INFO", "ERROR", "WARNING"]
 indexes = [i for i, v in enumerate(logs) if v == "ERROR"]
 print(indexes)
 
+for i, v in enumerate(logs):
+    if v == "error":
+        indexes.append(i)
+
+print(indexes)
+
 👉 Output: [0, 2]
 💡 Logic: Use enumerate() to track index
 
@@ -143,7 +149,12 @@ chunks = [nums[i:i+n] for i in range(0, len(nums), n)]
 print(chunks)
 
 👉 Output: [[1,2,3],[4,5,6],[7,8]]
-💡 DevOps use: batch processing
+💡 DevOps use: batch processing 
+ nums[0:0+3] → nums[0:3] → [1,2,3]
+
+ chunks = []
+for i in range(0, len(nums), n):
+    chunks.append(nums[i:i+n])
 
 🔥 7. Reverse Without Built-in
 nums = [1, 2, 3, 4]

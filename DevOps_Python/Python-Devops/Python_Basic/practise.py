@@ -1,6 +1,8 @@
-logs = ["info", "error", "debug", "info"]
+nums = [1,2,3,4]
+rev = []
 
-unique = []
+for x in nums:
+    rev = [x] + rev
+print(rev)
 
-for item in logs:
-    if item in 
+
