@@ -14,9 +14,11 @@ data "aws_subnet" "shared" {
     values = ["subneta"]
 
   }
-
+  
   vpc_id = data.aws_vpc.vpc_name.id
 }
+
+
 data "aws_ami" "linux2" {
   owners      = ["amazon"]
   most_recent = true
@@ -41,4 +43,6 @@ resource "aws_instance" "example" {
   subnet_id= data.aws_subnet.shared.id
   tags = var.tags
 }
+
+# Create multiple EC2 instances using for_each
 
