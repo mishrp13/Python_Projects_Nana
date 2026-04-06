@@ -54,6 +54,96 @@ Use tuple as dictionary key
 Compare tuples
 Return multiple values from function
 Immutable behavior demo
+
+__________________________
+
+🔹 BASICS
+1. Create a tuple
+t = (1, 2, 3)
+print(t)
+
+👉 Tuples use round brackets () and are immutable
+
+2. Access elements
+t = (10, 20, 30)
+print(t[0])   # 10
+print(t[-1])  # 30
+
+👉 Indexing works like lists
+
+3. Slice a tuple
+t = (1, 2, 3, 4, 5)
+print(t[1:4])  # (2, 3, 4)
+4. Convert tuple to list
+t = (1, 2, 3)
+lst = list(t)
+print(lst)  # [1, 2, 3]
+5. Convert list to tuple
+lst = [4, 5, 6]
+t = tuple(lst)
+print(t)  # (4, 5, 6)
+🔸 INTERMEDIATE
+6. Count occurrences
+t = (1, 2, 2, 3, 2)
+print(t.count(2))  # 3
+7. Find index of element
+t = (10, 20, 30)
+print(t.index(20))  # 1
+8. Loop through tuple
+t = (1, 2, 3)
+for x in t:
+    print(x)
+9. Tuple unpacking
+t = (10, 20, 30)
+a, b, c = t
+print(a, b, c)
+10. Swap variables using tuple
+a = 5
+b = 10
+
+a, b = b, a
+print(a, b)  # 10 5
+
+👉 No extra variable needed!
+
+🔴 ADVANCED
+11. Nested tuple access
+t = (1, (2, 3), 4)
+print(t[1][0])  # 2
+12. Use tuple as dictionary key
+d = {(1, 2): "A", (3, 4): "B"}
+print(d[(1, 2)])  # A
+
+👉 Works because tuples are immutable
+
+13. Compare tuples
+t1 = (1, 2, 3)
+t2 = (1, 2, 4)
+
+print(t1 < t2)  # True
+
+👉 Comparison is element-wise
+
+14. Return multiple values from function
+def calc(a, b):
+    return a + b, a * b
+
+sum_val, prod_val = calc(2, 3)
+print(sum_val, prod_val)  # 5 6
+15. Immutable behavior demo
+t = (1, 2, 3)
+# t[0] = 10   ❌ ERROR
+
+👉 But if tuple contains a list:
+
+t = (1, [2, 3])
+t[1][0] = 100
+print(t)  # (1, [100, 3])
+
+✔️ Tuple is immutable
+❗ But mutable elements inside it can change
+
+------------------------------------------------
 🔵 SECTION 3: SETS (46–70)
 Basics
 Create a set

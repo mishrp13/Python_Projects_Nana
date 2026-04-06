@@ -1,8 +1,5 @@
-nums = [1,2,3,4]
-rev = []
+def calc(a,b):
+    return a+b, a*b
 
-for x in nums:
-    rev = [x] + rev
-print(rev)
-
-
+sum_val,mul_val = calc(2,3)
+print(sum_val,mul_val)
