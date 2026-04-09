@@ -27,12 +27,13 @@ resource "aws_cloudfront_origin_access_control" "oac" {
 
 
 
+#authorization
 resource "aws_s3_bucket_policy" "allow_cf" {
   # implicit dependency
   bucket = aws_s3_bucket.first_bucket.id
   # explict dependency
   depends_on = [ aws_s3_bucket_public_access_block.block ]
-
+  # go to aws s3 policy generator
   policy = jsonencode({
   
   "Version": "2012-10-17",

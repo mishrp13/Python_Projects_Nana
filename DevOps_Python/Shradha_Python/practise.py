@@ -1,20 +1,19 @@
 class Solution:
-
-    def Pattern(self,n):
+    def Pattern3(self,n):
         for i in range(n):
-            for j in range(n):
-                print("*", end= "")
+            for j in range(i+1):
+                print(i,end= "")
             print()
 
-
     def main(self):
+        N=5
         sol=Solution()
-        N=4
-        sol.Pattern(N)
+        sol.Pattern3(N)
 
 
 if __name__=="__main__":
     Solution().main()
+              
 
 
 
