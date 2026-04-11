@@ -1,20 +1,41 @@
-class Solution:
-    def Pattern3(self,n):
-        for i in range(n):
-            for j in range(i+1):
-                print(i,end= "")
-            print()
+my_foods=["apple","bannana","cherry"]
 
-    def main(self):
-        N=5
-        sol=Solution()
-        sol.Pattern3(N)
-
-
-if __name__=="__main__":
-    Solution().main()
-              
+for food in my_foods:
+    for food2 in my_foods:
+        if food==food2:
+            print(f"skipping food {food}")
+            continue
+        print(f"cooking {food} with {food2}")
 
 
 
+class CountTo:
+    def __init__(self,max_value):
+        self.max=max_value
 
+    def __iter__(self):
+        return CountToIterator(self.max)
+
+
+class CountToIterator:
+
+    def __init__(self,max_value):
+        self.max=max_value
+        self.current=1
+
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        if self.current <= self.max:
+            val =self.current
+            self.current +=1
+            return val
+        else:
+            raise StopIteration
+        
+counter =CountTo(5)
+
+for count in counter:
+    for count2 in counter:
+        print(f"count: {count} and {count2}")
