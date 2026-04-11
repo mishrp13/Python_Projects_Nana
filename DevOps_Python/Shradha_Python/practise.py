@@ -1,41 +1,22 @@
-my_foods=["apple","bannana","cherry"]
+def filter_evens(data):
+    print(f"filter evens starting")
 
-for food in my_foods:
-    for food2 in my_foods:
-        if food==food2:
-            print(f"skipping food {food}")
-            continue
-        print(f"cooking {food} with {food2}")
+    for item in data:
+        if item%2 == 0:
+            print(f"filter_evens: yielding {item}")
+            yield item
 
+    print(f"filter_evens: finished")
 
+evens_from_range= filter_evens(range(6))
+print(f"Generator object created: {evens_from_range}")
 
-class CountTo:
-    def __init__(self,max_value):
-        self.max=max_value
+for num in evens_from_range:
+    print(f"Recieved even: {num}")
 
-    def __iter__(self):
-        return CountToIterator(self.max)
+evens_from_list = filter_evens([0,1,2,3,4,5,6])
 
+print(f"generator object created : {evens_from_list}")
 
-class CountToIterator:
-
-    def __init__(self,max_value):
-        self.max=max_value
-        self.current=1
-
-    def __iter__(self):
-        return self
-    
-    def __next__(self):
-        if self.current <= self.max:
-            val =self.current
-            self.current +=1
-            return val
-        else:
-            raise StopIteration
-        
-counter =CountTo(5)
-
-for count in counter:
-    for count2 in counter:
-        print(f"count: {count} and {count2}")
+for num in evens_from_list:
+    print(f"Recieved even: {num}")
