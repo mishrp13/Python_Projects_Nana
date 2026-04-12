@@ -1,22 +1,44 @@
-def filter_evens(data):
-    print(f"filter evens starting")
+def count_up_to(limit):
+    """Generates numbers from 1 up to (and including) the limit.
 
-    for item in data:
-        if item%2 == 0:
-            print(f"filter_evens: yielding {item}")
-            yield item
+    Args:
+        limit (int): The upper limit for counting.
 
-    print(f"filter_evens: finished")
+    Returns:
+        generator(int): The generator to lazily count up to limit.
+    """
+    print("Generator function started...")
+    n = 1
 
-evens_from_range= filter_evens(range(6))
-print(f"Generator object created: {evens_from_range}")
+    while n <= limit:
+        print(f"Yielding {n}")
+        yield n
+        print(f"Resumed after yielding {n}.")
+        n += 1
 
-for num in evens_from_range:
-    print(f"Recieved even: {num}")
+    print("Generator function finished.")
 
-evens_from_list = filter_evens([0,1,2,3,4,5,6])
 
-print(f"generator object created : {evens_from_list}")
+count_gen = count_up_to(2)
 
-for num in evens_from_list:
-    print(f"Recieved even: {num}")
+# print("first call to next outside of for loop")
+# print(next(count_gen))
+
+# print("second call to next outside of for loop")
+# print(next(count_gen))
+
+# print("remaining from inside loop")
+# for num in count_gen:
+#     print(num)
+
+print(next(count_gen))
+print(next(count_gen))
+
+try:
+    print(next(count_gen))
+except StopIteration:
+    print("generator finished")
+
+
+for number in count_gen:
+    print(number)
