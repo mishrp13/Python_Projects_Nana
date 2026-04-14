@@ -1,0 +1,8 @@
+[INFO] Application starting...
+[DEBUG] Connecting to database.
+ 
+# Configuration section
+  # A nested comment
+[WARN] Deprecated feature used.
+ 
+[ERROR] Failed to process request id: 123
