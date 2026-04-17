@@ -28,3 +28,10 @@ def parse_config_lines(lines):
             yield(current_section,key.strip(),value.strip())
 
 
+
+lines = read_config_file("config.txt")
+filtered = filter_config_lines(lines)
+parsed = parse_config_lines(filtered)
+
+for item in parsed:
+    print(item)
