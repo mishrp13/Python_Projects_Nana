@@ -4,10 +4,12 @@ I’m excited to share that I’ve successfully completed a hands-on AWS VPC Pee
 
 🔹 Project Overview:
 
+
 The goal of this project was to design and implement a cross-region VPC peering architecture that enables secure communication between AWS resources deployed in different regions.
+    
 
 🔹 Architecture & Implementation Details:
-
+      
 Created a Primary VPC in us-east-1
 
 Created a Secondary VPC in us-east-2
@@ -23,6 +25,8 @@ Updated route tables to enable traffic flow between the VPCs
 Launched EC2 instances in both regions using Terraform
 
 Configured security groups to allow ICMP traffic for connectivity testing
+
+
 
 🔹 Validation & Results:
 
