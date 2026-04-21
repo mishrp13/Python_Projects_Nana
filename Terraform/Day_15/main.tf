@@ -8,7 +8,7 @@ resource "aws_vpc" "primary_vpc" {
  
 
   tags = {
-    Name = "PRIMARY-VPC-${var.primary}"
+    Name = "PRIMARY-VPC-${var.primary}" 
   }
 }
 
