@@ -44,3 +44,4 @@ apiGroups: [""] → core API group (namespaces live here)
 resources: ["namespaces"] → target resource
 verbs: ["get"] → only allow read of a single namespace (not list, not create)
 cd
+ 
