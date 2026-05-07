@@ -1,0 +1,4 @@
+INFO: file only
+WARNING: file only
+ERROR: file and console
+CRITICAL: file and console both
