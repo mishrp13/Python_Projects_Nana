@@ -10,6 +10,7 @@ resource "aws_iam_group" "managers" {
   path = "/groups/"
 }
 
+
 resource "aws_iam_group" "engineers" {
   name = "Engineers"
   path = "/groups/"
@@ -39,8 +40,9 @@ resource "aws_iam_group_membership" "managers_members" {
 resource "aws_iam_group_membership" "engineers_members" {
   name  = "engineers-group-membership"
   group = aws_iam_group.engineers.name
-
+       
   users = [
     for user in aws_iam_user.users : user.name if user.tags.Department == "Engineering" # Note: No users match this in the current CSV
-  ]
+  ]  
+     
 }
